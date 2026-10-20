@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-20T12:03:58.675Z",
+  "scenario": "Offline create and edit, reconnect event automatically syncs to real MockAPI",
+  "status": "synced",
+  "pending": 0,
+  "remoteMatches": 1,
+  "remotePrice": 35000,
+  "activeDishes": 6
+}
