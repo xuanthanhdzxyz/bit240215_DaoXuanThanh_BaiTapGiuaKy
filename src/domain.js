@@ -45,7 +45,7 @@ export function validateDish(dish, categories, dishes) {
     return "badThumbnail";
   return null;
 }
-export function filterDishes(dishes, f) {
+export function filterDishes(dishes, f, nameOf = (d) => get(d, "Name")) {
   const min = f.min === "" ? 0 : Number(f.min),
     max = f.max === "" ? Infinity : Number(f.max);
   if (
@@ -58,7 +58,7 @@ export function filterDishes(dishes, f) {
     return { error: "badRange", rows: [] };
   let rows = dishes.filter(
     (d) =>
-      normalize(get(d, "Name")).includes(normalize(f.search)) &&
+      normalize(nameOf(d)).includes(normalize(f.search)) &&
       (!f.category || get(d, "DishCategoryId") === f.category) &&
       (f.available === "all" ||
         get(d, "IsAvailable") === (f.available === "yes")) &&
