@@ -3,11 +3,11 @@
 **Sinh viên: Đào Xuân Thành — BIT240215**  
 Bài kiểm tra giữa kỳ môn Phát triển ứng dụng di động: Quản lý món ăn.
 
-Ứng dụng **React Native + Expo SDK 58**, dùng **MockAPI REST API** kết hợp **AsyncStorage** để hoạt động offline và tự đồng bộ. Có đầy đủ màn hình danh sách, chi tiết, thêm/sửa món, quản lý loại món, cấu hình API và giao diện English/Tiếng Việt. Không bao gồm video theo yêu cầu của sinh viên.
+Ứng dụng **React Native + Expo SDK 57**, dùng **MockAPI REST API** kết hợp **AsyncStorage** để hoạt động offline và tự đồng bộ. Có đầy đủ màn hình danh sách, chi tiết, thêm/sửa món, quản lý loại món, cấu hình API và giao diện English/Tiếng Việt. Không bao gồm video theo yêu cầu của sinh viên.
 
 ## Chạy trên điện thoại Android
 
-Yêu cầu Node.js >= 22.13, npm và Expo Go tương thích SDK 58. Cài thư viện trong thư mục chứa `package.json`:
+Yêu cầu Node.js >= 22.13, npm và Expo Go tương thích SDK 57. Cài thư viện trong thư mục chứa `package.json`:
 
 ```bash
 npm ci
@@ -18,7 +18,19 @@ npm start
 
 Kiểm tra nhanh trên trình duyệt: `npm run web`. Đây là bản hỗ trợ kiểm tra giao diện; bài nộp vẫn là ứng dụng React Native chạy Android/iOS. Khi quay demo theo đề, dùng điện thoại hoặc emulator.
 
-Nếu Expo Go trên thiết bị chưa hỗ trợ SDK 58, cài phiên bản phù hợp từ trang chính thức https://expo.dev/go hoặc tạo development build. Có thể tạo APK qua tài khoản Expo với `npx eas-cli@latest build --platform android --profile preview`; file `eas.json` đã có cấu hình APK. Repository chưa chứa APK đã biên dịch.
+Nếu Expo Go trên thiết bị chưa hỗ trợ SDK 57, cài phiên bản phù hợp từ trang chính thức https://expo.dev/go hoặc tạo development build. Có thể tạo APK qua tài khoản Expo với `npx eas-cli@latest build --platform android --profile preview`; file `eas.json` đã có cấu hình APK. Repository chưa chứa APK đã biên dịch.
+
+## Chạy trên iPhone với Expo Go 57.0.9
+
+Project dùng Expo SDK 57 để tương thích Expo Go hỗ trợ SDK 57 trên iPhone của sinh viên.
+
+1. Dừng các terminal Expo cũ bằng Ctrl+C.
+2. Đăng nhập cùng một tài khoản Expo trên máy tính (`npx expo login`) và Expo Go trên iPhone.
+3. Cho máy tính/iPhone cùng Wi-Fi, chạy `npx expo start --lan --clear`.
+4. Dùng Camera iPhone quét QR và mở bằng Expo Go. Cho phép Local Network nếu iOS yêu cầu.
+5. Nếu mạng Wi-Fi chặn kết nối, dùng `npx expo start --tunnel` và quét QR mới.
+
+Không dùng `--localhost` hoặc địa chỉ 127.0.0.1 khi kết nối từ iPhone. Giữ terminal mở. Sau lần cài thư viện thành công chỉ cần chạy Expo, không chạy lại `npm ci` mỗi lần mở app.
 
 ## MockAPI đã cấu hình
 
@@ -44,7 +56,7 @@ Nếu Expo Go trên thiết bị chưa hỗ trợ SDK 58, cài phiên bản phù
 | Chế biến                   | ≤15 phút: Quick/Nhanh; >15 phút: Regular/Thông thường                                   |
 | Validation                 | Tên không rỗng; giá/thời gian hữu hạn >0; loại tồn tại; không trùng tên trong cùng loại |
 | Trường hợp lỗi             | ID mất, danh sách/ảnh trống, ảnh lỗi, khoảng giá sai, local lỗi, HTTP lỗi/time-out      |
-| Đa ngôn ngữ                | English mặc định, chuyển Việt/Anh tại header; lưu lựa chọn qua lần mở lại               |
+| Đa ngôn ngữ                | English mặc định; nhãn, dữ liệu mẫu, loại món, tên/mô tả và footer đổi theo ngôn ngữ; lưu lựa chọn qua lần mở lại               |
 | Offline nâng cao           | Ghi local trước; hàng chờ nằm cùng một envelope với dữ liệu                             |
 | Tự đồng bộ                 | Khi có mạng lại, mở app/trở lại foreground, và mỗi 20 giây khi app đang mở              |
 | Không tạo trùng khi retry  | ID nghiệp vụ ổn định; GET đối chiếu trước POST/PUT; test mất phản hồi POST            |
@@ -90,3 +102,11 @@ Xóa dùng tombstone `BIT240215_Deleted=true` để đồng bộ việc xóa san
 ## Nộp bài
 
 Nộp link repository theo đề. Sinh viên tự quay Video 1/Video 2 và tự nộp LMS; các video không được tạo trong repository này. Cần đọc tài liệu và tự chạy các thao tác để giải thích được mã nguồn.
+
+## Nội dung món ăn và loại món có hai ngôn ngữ
+
+Theo yêu cầu bổ sung của sinh viên, dữ liệu mẫu cũng đổi giữa tiếng Việt và tiếng Anh. Ví dụ Gỏi cuốn ↔ Fresh spring rolls, Khai vị ↔ Starters. Tìm kiếm theo tên đang hiển thị. Không thay đổi ID, ảnh hoặc reset dữ liệu để chuyển ngôn ngữ.
+
+Form thêm/sửa món và loại có ô tên tiếng Việt, tên tiếng Anh (đều bắt buộc), cùng hai ô mô tả. Các trường bổ sung được lưu là `BIT240215_NameVi`, `BIT240215_NameEn`, `BIT240215_DescriptionVi`, `BIT240215_DescriptionEn`; `BIT240215_Name` và `BIT240215_Description` vẫn được giữ để tương thích model đề bài. Các bản dịch được lưu local và đồng bộ cùng record qua MockAPI.
+
+Với dữ liệu tự tạo trước khi có tính năng hai ngôn ngữ, mở Sửa để bổ sung bản dịch. Ứng dụng không gửi nội dung sang dịch vụ dịch máy và không tự đoán bản dịch của nội dung tùy ý. Dữ liệu chưa có bản dịch vẫn giữ nội dung gốc để không mất thông tin.

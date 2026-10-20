@@ -21,6 +21,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { FoodRepository } from "./src/repository";
 import { get, record, uid, isUrl, filterDishes } from "./src/domain";
 import { translate } from "./src/i18n";
+import { contentText } from "./src/content";
 import { router, Slot, usePathname } from "expo-router";
 const repo = new FoodRepository(AsyncStorage);
 const defaultFilters = {
@@ -228,16 +229,19 @@ export default function App() {
       </View>
     );
   const categoryName = (id) =>
-    get(
+    contentText(
       data.categories.find((c) => get(c, "Id") === id),
       "Name",
+      data.lang,
     ) || t("missing");
   const money = (value) =>
     new Intl.NumberFormat(data.lang === "vi" ? "vi-VN" : "en-US").format(
       value,
     ) + " ₫";
   const current = data.dishes.find((d) => get(d, "Id") === page.id),
-    filtered = filterDishes(data.dishes, filters);
+    filtered = filterDishes(data.dishes, filters, (d) =>
+      contentText(d, "Name", data.lang),
+    );
   const setFilter = (k, v) => setFilters((f) => ({ ...f, [k]: v }));
   return (
     <KeyboardAvoidingView
@@ -302,7 +306,8 @@ export default function App() {
               <View>
                 <Text style={s.section}>{t("list")}</Text>
                 <Text style={s.muted}>
-                  {data.dishes.length} {t("total")}
+                  {data.dishes.length}{" "}
+                  {t(data.dishes.length === 1 ? "totalSingular" : "total")}
                 </Text>
               </View>
               <Button onPress={() => setPage({ type: "form" })}>
@@ -334,7 +339,7 @@ export default function App() {
                     selected={filters.category === get(c, "Id")}
                     onPress={() => setFilter("category", get(c, "Id"))}
                   >
-                    {get(c, "Name")}
+                    {contentText(c, "Name", data.lang)}
                   </Button>
                 ))}
               </View>
@@ -409,14 +414,16 @@ export default function App() {
               return (
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel={get(d, "Name")}
+                  accessibilityLabel={contentText(d, "Name", data.lang)}
                   key={get(d, "Id")}
                   onPress={() => setPage({ type: "detail", id: get(d, "Id") })}
                   style={s.card}
                 >
                   <Photo url={get(cover, "ImageUrl")} t={t} />
                   <View style={s.cardBody}>
-                    <Text style={s.cardTitle}>{get(d, "Name")}</Text>
+                    <Text style={s.cardTitle}>
+                      {contentText(d, "Name", data.lang)}
+                    </Text>
                     <Text style={s.muted}>
                       {categoryName(get(d, "DishCategoryId"))}
                     </Text>
@@ -451,7 +458,9 @@ export default function App() {
             </Button>
             {current ? (
               <>
-                <Text style={s.section}>{get(current, "Name")}</Text>
+                <Text style={s.section}>
+                  {contentText(current, "Name", data.lang)}
+                </Text>
                 <Text style={s.muted}>
                   {categoryName(get(current, "DishCategoryId"))}
                 </Text>
@@ -473,7 +482,9 @@ export default function App() {
                     )}
                   </Text>
                 </View>
-                <Text style={s.body}>{get(current, "Description")}</Text>
+                <Text style={s.body}>
+                  {contentText(current, "Description", data.lang)}
+                </Text>
                 <Text style={s.section}>{t("images")}</Text>
                 {!(get(current, "DishImage") || []).length && (
                   <Photo t={t} large />
@@ -560,6 +571,7 @@ export default function App() {
             busy={busy}
             save={(c, editing) => run(() => repo.saveCategory(c, editing))}
             remove={(id) => confirm("categories", id)}
+            error={(message) => setDialog({ message })}
           />
         )}
         {page.type === "settings" && (
@@ -589,7 +601,9 @@ export default function App() {
           </View>
         )}
         <Text style={s.footer}>
-          Đào Xuân Thành · BIT240215{"\n"}Mobile Development · Food Manager
+          {t("about")}
+          {"\n"}
+          {t("course")} · {t("title")}
         </Text>
       </ScrollView>
       <Slot />
@@ -629,12 +643,18 @@ export default function App() {
   );
 }
 function DishForm({ dish, data, t, save, cancel, busy, error }) {
-  const [name, setName] = useState(get(dish, "Name") || ""),
+  const [name, setName] = useState(contentText(dish, "Name", "vi")),
+    [nameEn, setNameEn] = useState(contentText(dish, "Name", "en")),
     [price, setPrice] = useState(dish ? String(get(dish, "Price")) : ""),
     [time, setTime] = useState(
       dish ? String(get(dish, "PreparationTime")) : "",
     ),
-    [description, setDescription] = useState(get(dish, "Description") || ""),
+    [description, setDescription] = useState(
+      contentText(dish, "Description", "vi"),
+    ),
+    [descriptionEn, setDescriptionEn] = useState(
+      contentText(dish, "Description", "en"),
+    ),
     [category, setCategory] = useState(
       get(dish, "DishCategoryId") || get(data.categories[0], "Id") || "",
     ),
@@ -655,6 +675,10 @@ function DishForm({ dish, data, t, save, cancel, busy, error }) {
         : next;
     });
   const submit = () => {
+    if (!name.trim() || !nameEn.trim()) {
+      error("requiredTranslations");
+      return;
+    }
     if (url.trim()) {
       error("unaddedImage");
       return;
@@ -663,9 +687,13 @@ function DishForm({ dish, data, t, save, cancel, busy, error }) {
       record({
         Id: get(dish, "Id") || uid(),
         Name: name.trim(),
+        NameVi: name.trim(),
+        NameEn: nameEn.trim(),
         Price: Number(price),
         PreparationTime: Number(time),
         Description: description.trim(),
+        DescriptionVi: description.trim(),
+        DescriptionEn: descriptionEn.trim(),
         DishCategoryId: category,
         IsAvailable: available,
         DishImage: images,
@@ -675,7 +703,8 @@ function DishForm({ dish, data, t, save, cancel, busy, error }) {
   return (
     <View style={s.panel}>
       <Text style={s.section}>{t(dish ? "edit" : "add")}</Text>
-      <Field label={t("name")} value={name} onChangeText={setName} />
+      <Field label={t("nameVi")} value={name} onChangeText={setName} />
+      <Field label={t("nameEn")} value={nameEn} onChangeText={setNameEn} />
       <Field label={t("price")} value={price} onChangeText={setPrice} numeric />
       <Field label={t("time")} value={time} onChangeText={setTime} numeric />
       <Text style={s.label}>{t("category")}</Text>
@@ -687,7 +716,7 @@ function DishForm({ dish, data, t, save, cancel, busy, error }) {
             selected={category === get(c, "Id")}
             onPress={() => setCategory(get(c, "Id"))}
           >
-            {get(c, "Name")}
+            {contentText(c, "Name", data.lang)}
           </Button>
         ))}
       </View>
@@ -704,9 +733,15 @@ function DishForm({ dish, data, t, save, cancel, busy, error }) {
         />
       </View>
       <Field
-        label={t("description")}
+        label={t("descriptionVi")}
         value={description}
         onChangeText={setDescription}
+        multiline
+      />
+      <Field
+        label={t("descriptionEn")}
+        value={descriptionEn}
+        onChangeText={setDescriptionEn}
         multiline
       />
       <Text style={s.section}>{t("images")}</Text>
@@ -766,34 +801,51 @@ function DishForm({ dish, data, t, save, cancel, busy, error }) {
     </View>
   );
 }
-function Categories({ data, t, busy, save, remove }) {
+function Categories({ data, t, busy, save, remove, error }) {
   const [editing, setEditing] = useState(null),
     [name, setName] = useState(""),
-    [description, setDescription] = useState("");
+    [description, setDescription] = useState(""),
+    [nameEn, setNameEn] = useState(""),
+    [descriptionEn, setDescriptionEn] = useState("");
   return (
     <>
       <View style={s.panel}>
         <Text style={s.section}>{t(editing ? "edit" : "addCategory")}</Text>
-        <Field label={t("name")} value={name} onChangeText={setName} />
+        <Field label={t("nameVi")} value={name} onChangeText={setName} />
+        <Field label={t("nameEn")} value={nameEn} onChangeText={setNameEn} />
         <Field
-          label={t("description")}
+          label={t("descriptionVi")}
           value={description}
           onChangeText={setDescription}
+          multiline
+        />
+        <Field
+          label={t("descriptionEn")}
+          value={descriptionEn}
+          onChangeText={setDescriptionEn}
           multiline
         />
         <View style={s.wrap}>
           <Button
             disabled={busy}
-            onPress={() =>
+            onPress={() => {
+              if (!name.trim() || !nameEn.trim()) {
+                error("requiredTranslations");
+                return;
+              }
               save(
                 record({
                   Id: editing || uid(),
-                  Name: name,
-                  Description: description,
+                  Name: name.trim(),
+                  NameVi: name.trim(),
+                  NameEn: nameEn.trim(),
+                  Description: description.trim(),
+                  DescriptionVi: description.trim(),
+                  DescriptionEn: descriptionEn.trim(),
                 }),
                 !!editing,
-              )
-            }
+              );
+            }}
           >
             {t("save")}
           </Button>
@@ -803,6 +855,8 @@ function Categories({ data, t, busy, save, remove }) {
               setEditing(null);
               setName("");
               setDescription("");
+              setNameEn("");
+              setDescriptionEn("");
             }}
           >
             {t("cancel")}
@@ -811,23 +865,31 @@ function Categories({ data, t, busy, save, remove }) {
       </View>
       {data.categories.map((c) => (
         <View key={get(c, "Id")} style={s.panel}>
-          <Text style={s.cardTitle}>{get(c, "Name")}</Text>
-          <Text style={s.body}>{get(c, "Description")}</Text>
+          <Text style={s.cardTitle}>{contentText(c, "Name", data.lang)}</Text>
+          <Text style={s.body}>{contentText(c, "Description", data.lang)}</Text>
           <Text style={s.muted}>
             {
               data.dishes.filter(
                 (d) => get(d, "DishCategoryId") === get(c, "Id"),
               ).length
             }{" "}
-            {t("total")}
+            {t(
+              data.dishes.filter(
+                (d) => get(d, "DishCategoryId") === get(c, "Id"),
+              ).length === 1
+                ? "totalSingular"
+                : "total",
+            )}
           </Text>
           <View style={s.wrap}>
             <Button
               kind="secondary"
               onPress={() => {
                 setEditing(get(c, "Id"));
-                setName(get(c, "Name"));
-                setDescription(get(c, "Description"));
+                setName(contentText(c, "Name", "vi"));
+                setNameEn(contentText(c, "Name", "en"));
+                setDescription(contentText(c, "Description", "vi"));
+                setDescriptionEn(contentText(c, "Description", "en"));
               }}
             >
               {t("edit")}
