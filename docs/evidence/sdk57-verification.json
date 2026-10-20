@@ -1,0 +1,21 @@
+{
+  "sdk": "57",
+  "expo": "57.0.30",
+  "react": "19.2.3",
+  "reactNative": "0.86.3",
+  "targetExpoGoClient": "57.0.9",
+  "tests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "lint": "passed",
+  "typecheck": "passed",
+  "dependencyCheck": "passed (local bundled SDK map)",
+  "exports": {
+    "ios": "passed after bilingual changes",
+    "android": "passed before bilingual changes",
+    "web": "passed before bilingual changes"
+  },
+  "physicalIPhoneRuntime": "awaiting student verification",
+  "bilingualContent": "demo translations, editable Vietnamese/English content, localized search and footer"
+}
