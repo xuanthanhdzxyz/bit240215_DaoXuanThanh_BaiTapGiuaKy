@@ -75,6 +75,8 @@ test("combines name, category, availability, price and sorting", () => {
     "badRange",
   );
   assert.equal(filterDishes(dishes, { ...f, min: "abc" }).error, "badRange");
+  assert.equal(filterDishes(dishes, { ...f, max: "Infinity" }).error, "badRange");
+  assert.equal(filterDishes(dishes, { ...f, max: "1e9999" }).error, "badRange");
   assert.equal(
     get(filterDishes(dishes, { ...f, sort: "time" }).rows[0], "Name"),
     "Nước cam",
