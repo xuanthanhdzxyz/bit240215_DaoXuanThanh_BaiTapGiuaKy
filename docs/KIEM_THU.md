@@ -2,6 +2,10 @@
 
 Ngày kiểm tra: 20/10/2026. Người thực hiện bài: Đào Xuân Thành — BIT240215.
 
+## Tương thích iPhone
+
+Project đã chuyển từ Expo SDK 58 sang SDK 57 theo phiên bản thực tế trên iPhone của sinh viên: Expo Go client 57.0.9, supported SDK 57.0.0. Sau khi chuyển SDK đã chạy lại: 9/9 test đạt, lint đạt, typecheck đạt, kiểm tra dependency theo SDK 57 đạt, xuất bundle iOS/Android/web thành công. Các ảnh minh chứng và kết quả MockAPI ban đầu được ghi trước khi chuyển SDK. Cần chạy lại trên iPhone để xác nhận runtime thực tế; việc xuất bundle iOS trên Windows không thay thế kiểm thử trên thiết bị.
+
 ## Kết quả đã chạy
 
 | Kiểm tra | Kết quả |
@@ -75,3 +79,12 @@ npx expo export --platform android
 ```
 
 Video do sinh viên tự thực hiện theo đề; tài liệu này không thay thế yêu cầu nộp video/LMS.
+
+## Kiểm tra bổ sung Anh–Việt
+
+- 13/13 test đạt (9 nghiệp vụ/đồng bộ, 4 kiểm tra hiển thị và lưu nội dung song ngữ).
+- Lint và typecheck đạt.
+- Đổi ngôn ngữ áp dụng cả footer, tên loại, tên và mô tả món mẫu, trạng thái và thông báo.
+- Form thêm/sửa có hai tên bắt buộc và hai mô tả; khi chuyển màn hình/ngôn ngữ bản nháp không bị tự dịch hay ghi đè.
+- Tìm “spring” trong English tìm được Fresh spring rolls; tìm tiếng Việt khi đang ở Vietnamese.
+- Bản dịch tùy chỉnh được ưu tiên hơn dữ liệu mẫu và tồn tại sau khi lưu offline/mở lại app.

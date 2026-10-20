@@ -2,7 +2,7 @@
 
 ## 1. Lựa chọn công nghệ
 
-React Native dựng giao diện di động bằng View/Text/TextInput/Image/Switch/ScrollView. Expo SDK 58 quản lý môi trường chạy Android/iOS. Expo Router quản lý đường dẫn; layout gốc giữ bộ lọc, dữ liệu và ngôn ngữ khi chuyển màn hình. Không tạo thủ công thư mục android/ios.
+React Native dựng giao diện di động bằng View/Text/TextInput/Image/Switch/ScrollView. Expo SDK 57 quản lý môi trường chạy Android/iOS. Expo Router quản lý đường dẫn; layout gốc giữ bộ lọc, dữ liệu và ngôn ngữ khi chuyển màn hình. Không tạo thủ công thư mục android/ios.
 
 MockAPI là nguồn dữ liệu REST. AsyncStorage là bản sao local và hàng chờ thay đổi, cho phép thêm/sửa/xóa khi mất mạng. NetInfo phát sự kiện kết nối; AppState nhận lúc người dùng quay lại ứng dụng. Bộ hẹn giờ 20 giây tự thử lại khi server lỗi tạm thời.
 
@@ -69,7 +69,7 @@ Nhanh/Quick tính lúc hiển thị với điều kiện PreparationTime≤15; k
 
 ## 5. Đa ngôn ngữ
 
-Từ điển `src/i18n.js` có cùng key cho English và Tiếng Việt. Mỗi nhãn, nút, trạng thái, lỗi validation được tra qua `translate(lang)(key)`. Mặc định lần cài mới là `en`. Đổi ngôn ngữ ghi AsyncStorage nên còn hiệu lực khi đi màn khác hoặc mở lại app. Dữ liệu tên/mô tả do người dùng nhập không dịch.
+Từ điển `src/i18n.js` có cùng key cho English và Tiếng Việt. Mỗi nhãn, nút, trạng thái, lỗi validation được tra qua `translate(lang)(key)`. Mặc định lần cài mới là `en`. Đổi ngôn ngữ ghi AsyncStorage nên còn hiệu lực khi đi màn khác hoặc mở lại app. Theo yêu cầu bổ sung của sinh viên, tên và mô tả có hai phiên bản nhập riêng: NameVi/NameEn, DescriptionVi/DescriptionEn (đều có tiền tố BIT240215_ khi lưu). Dữ liệu mẫu cũ được tra bản dịch chính xác qua contentText mà không reset local/server. Nội dung tùy ý chưa có bản dịch giữ nguyên cho đến khi người dùng bổ sung trong form.
 
 ## 6. Offline và tự đồng bộ
 
