@@ -51,7 +51,7 @@ export function filterDishes(dishes, f, nameOf = (d) => get(d, "Name")) {
   if (
     !Number.isFinite(min) ||
     min < 0 ||
-    Number.isNaN(max) ||
+    (f.max !== "" && !Number.isFinite(max)) ||
     max < min ||
     max < 0
   )
